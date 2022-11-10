@@ -7,16 +7,23 @@ public class Camera : MonoBehaviour
     public Vector3 distance;
     public Transform targetPlayer,targetForklift;
     float mouseX,mouseY;
+    bool isWalking, isDriving;
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
 
+    private void Update()
+    {
+        isWalking = gameObject.GetComponent<Player>().walkSit;
+        isDriving = gameObject.GetComponent<Player>().driveSit;
+    }
+
     private void LateUpdate()
     {
-        if (gameObject.GetComponent<Player>().walkSit == 1)
+        if (isWalking)
         {
-            Debug.Log("walkSit Accessible");
+            Debug.Log("Is Walking");
             this.transform.position = Vector3.Lerp(this.transform.position, targetPlayer.transform.position + distance, Time.deltaTime * 10);
             mouseX += Input.GetAxis("Mouse X");
             mouseY += Input.GetAxis("Mouse Y");
@@ -34,9 +41,9 @@ public class Camera : MonoBehaviour
             targetPlayer.transform.eulerAngles = new Vector3(0, mouseX, 0);
         }
 
-        if (gameObject.GetComponent<Player>().driveSit == 1)
+        if (isDriving)
         {
-            Debug.Log("driveSit Accessible");
+            Debug.Log("Is Driving");
             this.transform.position = Vector3.Lerp(this.transform.position, targetForklift.transform.position + distance, Time.deltaTime * 10);
             mouseX += Input.GetAxis("Mouse X");
             mouseY += Input.GetAxis("Mouse Y");

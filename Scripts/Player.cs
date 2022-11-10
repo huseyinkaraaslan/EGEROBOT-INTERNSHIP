@@ -8,19 +8,18 @@ public class Player : MonoBehaviour
     private float playerSpeed;
     public GameObject pressF,pressQ;
     public GameObject driverPosition, outPosition;
-    public int walkSit, driveSit;
+    public bool walkSit, driveSit;  // sit --> situation
     void Start()
     {
-        walkSit = 1; driveSit = 0;
+        walkSit = true; driveSit = false;
         anim = this.GetComponent<Animator>();
         pressF.SetActive(false);
         pressQ.SetActive(false);
     }
-
     
     void Update()
     {
-        if (walkSit == 1)
+        if (walkSit)
         {
             movement();
         }
@@ -35,8 +34,18 @@ public class Player : MonoBehaviour
 
         if (Input.GetAxis("Vertical") > 0 || Input.GetAxis("Vertical") < 0 || Input.GetAxis("Horizontal") < 0 || Input.GetAxis("Horizontal") > 0)
         {
-            playerSpeed = 2.4f;
-            anim.SetBool("walking", true);          
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                playerSpeed = 8f;
+                anim.SetBool("run", true);
+                anim.SetBool("walking", false);
+            }
+            else
+            {
+                playerSpeed = 2.4f;
+                anim.SetBool("walking", true);
+                anim.SetBool("run", false);
+            }       
         }
 
         if (Input.GetAxis("Vertical") < 0 & Input.GetAxis("Horizontal") > 0 || Input.GetAxis("Vertical") < 0 & Input.GetAxis("Horizontal") < 0)
@@ -49,7 +58,14 @@ public class Player : MonoBehaviour
         {
             anim.SetBool("walking", false);
         }
-        
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            if (Input.GetAxis("Vertical") > 0)
+            {
+                playerSpeed = 5f;
+            }
+        }        
         this.gameObject.transform.Translate(horizontal * playerSpeed * Time.deltaTime, 0, vertical * playerSpeed * Time.deltaTime);
     }
 
@@ -68,21 +84,20 @@ public class Player : MonoBehaviour
             if (Input.GetKey(KeyCode.F))
             {
                 anim.SetBool("drive", true);
-                driveSit = 1;
                 this.gameObject.transform.position = driverPosition.transform.position;
                 pressF.SetActive(false);
                 pressQ.SetActive(true);
-                driveSit = 1;
-                walkSit = 0;
+                driveSit = true;
+                walkSit = false;
             }
 
-            else if (anim.GetBool("drive") & Input.GetKey(KeyCode.Q))
+            if (anim.GetBool("drive") & Input.GetKey(KeyCode.Q))
             {
                 anim.SetBool("drive", false);
                 this.gameObject.transform.position = outPosition.transform.position;
                 pressQ.SetActive(false);
-                driveSit = 0;
-                walkSit = 1;
+                driveSit = false;
+                walkSit = true;
             }
         }
     }
